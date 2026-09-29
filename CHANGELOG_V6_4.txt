@@ -1,0 +1,37 @@
+v6.4 changes (refined package)
+
+backend/database.py
+- Completely rewritten: MS SQL Server / pyodbc removed.
+- Auto-detects Postgres (DATABASE_URL or PG_* vars) or falls back to local SQLite.
+- WAL mode + foreign keys for SQLite; pool settings for Postgres.
+- New helpers: is_postgres(), supports_percentile(), db_health().
+
+backend/__init__.py
+- Version bumped to 6.4.0; clean package exports.
+
+backend/main.py
+- SERVICE_VERSION = 6.4-DeepAnalytics
+- Uses new database helpers (db_health, supports_percentile).
+- /health and /api/v1/deep-analytics-status now expose database status,
+  risk-band definition and the official guardrail text.
+- Root endpoint lists the key routes for discoverability.
+- Deep analytics continues to operate on the full filtered population;
+  only scatter samples are capped.
+
+backend/final_risk.py
+- FINAL_RISK_VERSION = 4.1 (risk-band semantics unchanged: 0-25 / 25-50 / 50-75 / 75-100).
+
+ml/anomaly_model.py
+- MODEL_VERSION = 4.1 (IsolationForest contract unchanged).
+
+dashboard/app.py
+- APP_VERSION = 6.4-Dash-DeepAnalytics
+- Request timeout raised to 90 s for large filtered deep-analytics payloads.
+- Loading / error states already separate KPI layer from deep charts (v6.3).
+- Methodology & Guardrails panel remains the source of truth for score semantics.
+
+requirements.txt
+- pyodbc removed; psycopg2-binary added as optional Postgres driver.
+- python-dotenv added.
+
+No ML/risk/data-generation logic removed. All signals remain review signals only.
