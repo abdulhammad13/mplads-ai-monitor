@@ -165,36 +165,6 @@ http://127.0.0.1:8050
 
 ---
 
-## AI Copilot
-
-The Copilot is designed around the active dashboard state rather than acting as a generic chatbot.
-
-Typical questions include:
-
-```text
-Compare completion rate in Uttar Pradesh vs Delhi.
-
-Summarize the current filtered scope.
-
-Explain the main risk signals in this scope.
-
-Why is utilization low in the current scope?
-
-Investigate this Work ID and show the evidence that should be reviewed.
-
-Explain this chart in plain language.
-```
-
-The Copilot should distinguish clearly between:
-
-- **Observed data**
-- **Calculated comparisons**
-- **Model/risk signals**
-- **Interpretation**
-- **Recommended human review**
-
----
-
 ## Analytical philosophy
 
 The project deliberately favors **explainability and evidence**.
