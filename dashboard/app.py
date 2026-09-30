@@ -2585,6 +2585,12 @@ app.layout = html.Div(
                             title="Open work profile",
                         ),
                         html.Button(
+                            [html.Span("▶", className="btn-icon"), html.Span("60s Demo", className="btn-label")],
+                            id="demo-work-button",
+                            className="action-button action-primary",
+                            title="Open the current top-priority work and generate its live evidence alert card",
+                        ),
+                        html.Button(
                             [html.Span("⇩", className="btn-icon"), html.Span("Download queue", className="btn-label")],
                             id="download-button",
                             className="action-button",
@@ -9789,10 +9795,21 @@ def render_view(view, filtered, works_payload, analytics, health):
 @app.callback(
     Output("selected-work-detail", "children"),
     Input("work-lookup-button", "n_clicks"),
+    Input("demo-work-button", "n_clicks"),
     State("work-id-input", "value"),
+    State("works-store", "data"),
     prevent_initial_call=True,
 )
-def lookup_work(_clicks, work_uid):
+def lookup_work(_clicks, _demo_clicks, work_uid, works_payload):
+    # Demo mode intentionally reuses the live filtered queue; no hard-coded
+    # Work ID is introduced, so the demo stays valid as the dataset changes.
+    if ctx.triggered_id == "demo-work-button":
+        demo_works = records(works_payload)
+        if not demo_works:
+            return empty_panel("No work is available in the current scope for the live demo.")
+        # /api/v1/works is already requested in priority_score DESC order.
+        work_uid = demo_works[0].get("work_uid")
+
     uid = str(work_uid or "").strip()
 
     if not uid:
