@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import json
 import math
@@ -2258,7 +2258,7 @@ app = Dash(
     __name__,
     title="MPLADS AI Monitor",
     update_title="MPLADS AI Monitor · updating",
-    suppress_callback_exceptions=False,
+    suppress_callback_exceptions=True,
     serve_locally=True,
 )
 server = app.server
@@ -2305,10 +2305,30 @@ app.index_string = r"""
 
 <script>
 (function(){
+  // Shareable demo URL: https://YOUR-RENDER-URL/?demo=1
+  // The button is clicked only after Dash has mounted it.
+  function launchFromQuery(){
+    try{
+      var params=new URLSearchParams(window.location.search);
+      if(params.get("demo")!=="1") return;
+      var tries=0;
+      var timer=setInterval(function(){
+        var btn=document.getElementById("demo-work-button");
+        if(btn){ clearInterval(timer); setTimeout(function(){ btn.click(); }, 350); }
+        if(++tries>80) clearInterval(timer);
+      }, 250);
+    }catch(e){}
+  }
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", launchFromQuery); else launchFromQuery();
+})();
+</script>
+
+<script>
+(function(){
   var observer = new MutationObserver(function(){
     var detail = document.getElementById("selected-work-detail");
     if(!detail) return;
-    var card = detail.querySelector(".detail-card");
+    var card = detail.querySelector(".final-alert-card, .detail-card");
     if(card){ setTimeout(function(){ card.scrollIntoView({behavior:"smooth", block:"start"}); }, 180); }
   });
   function start(){
@@ -2899,8 +2919,7 @@ app.layout = html.Div(
 
 app.index_string = app.index_string.replace(
     "</head>",
-    """
-<style>
+    """\n<style>\n/* ============================================================\n   FINAL LIVE WORK ALERT — presentation-grade / screenshot ready\n   ============================================================ */\n.final-alert-card{\n  position:relative!important;\n  margin-top:22px!important;\n  padding:0!important;\n  border:1px solid rgba(143,208,255,.22)!important;\n  border-radius:28px!important;\n  overflow:hidden!important;\n  background:\n    radial-gradient(circle at 94% 4%,rgba(143,208,255,.10),transparent 25%),\n    radial-gradient(circle at 6% 95%,rgba(104,200,147,.055),transparent 28%),\n    linear-gradient(145deg,#101A24 0%,#091017 56%,#070C12 100%)!important;\n  box-shadow:0 28px 90px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.045),0 0 0 1px rgba(143,208,255,.025)!important;\n}\n.final-alert-card:before{\n  content:"";position:absolute;inset:0;pointer-events:none;\n  background:linear-gradient(rgba(143,208,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(143,208,255,.018) 1px,transparent 1px);\n  background-size:32px 32px;mask-image:linear-gradient(180deg,#000,transparent 92%);-webkit-mask-image:linear-gradient(180deg,#000,transparent 92%);\n}\n.final-alert-top{position:relative;display:flex;justify-content:space-between;gap:26px;padding:28px 30px 22px;border-bottom:1px solid rgba(143,208,255,.09);align-items:center}\n.final-alert-heading{min-width:0;flex:1}\n.final-alert-kicker{font:700 9px/1 Cascadia Mono,Consolas,monospace;letter-spacing:.22em;color:#8FD0FF;margin-bottom:9px}\n.final-alert-title{font:700 30px/1 Bahnschrift,Segoe UI,sans-serif;letter-spacing:-.035em;color:#EEF5F9}\n.final-alert-work-name{margin-top:10px;font:650 17px/1.35 Bahnschrift,Segoe UI,sans-serif;color:#D7E4EC;max-width:820px}\n.final-alert-uid{margin-top:8px;font:600 9px Cascadia Mono,Consolas,monospace;letter-spacing:.08em;color:#7190A4;word-break:break-all}\n.final-alert-context{margin-top:8px;font:500 10px Segoe UI,Arial,sans-serif;color:#8EA5B4}\n.final-alert-orb{width:126px;height:126px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:0 0 126px;background:radial-gradient(circle at 50% 40%,#1A2B38,#0A1117 69%);border:1px solid rgba(143,208,255,.22);box-shadow:0 0 0 8px rgba(143,208,255,.02),inset 0 0 34px rgba(143,208,255,.06)}\n.final-alert-orb.high{border-color:rgba(240,163,107,.50);box-shadow:0 0 0 8px rgba(240,163,107,.035),inset 0 0 34px rgba(240,163,107,.08)}\n.final-alert-orb.critical{border-color:rgba(232,90,90,.52);box-shadow:0 0 0 8px rgba(232,90,90,.035),inset 0 0 34px rgba(232,90,90,.08)}\n.final-alert-score{font:750 38px Bahnschrift,Segoe UI,sans-serif;color:#F3F8FB;line-height:1}\n.final-alert-score-label{font:700 7px Cascadia Mono,Consolas,monospace;color:#6E8495;letter-spacing:.18em;margin-top:5px}\n.final-alert-band{margin-top:7px;font:800 8px Cascadia Mono,Consolas,monospace;letter-spacing:.18em;color:#8FD0FF}\n.final-alert-band.high{color:#F0A36B}.final-alert-band.critical{color:#F48787}.final-alert-band.medium{color:#F0C675}.final-alert-band.low{color:#72D79B}\n.final-alert-metrics{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:15px 30px 16px}\n.final-alert-metric{min-height:74px;padding:12px 13px;border:1px solid rgba(143,208,255,.08);border-radius:15px;background:rgba(7,14,20,.54)}\n.final-alert-metric-label{font:700 7px Cascadia Mono,Consolas,monospace;letter-spacing:.14em;color:#718B9D}.final-alert-metric-value{margin-top:8px;font:700 17px Bahnschrift,Segoe UI,sans-serif;color:#E8F1F6}\n.final-alert-grid{position:relative;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:14px;padding:4px 30px 16px}\n.final-alert-panel{border:1px solid rgba(143,208,255,.08);border-radius:18px;background:rgba(7,13,19,.62);padding:17px}\n.final-alert-section-label{font:700 8px Cascadia Mono,Consolas,monospace;letter-spacing:.16em;color:#89A6B8;margin-bottom:11px}\n.final-alert-explanation{font:650 14px/1.55 Segoe UI,Arial,sans-serif;color:#D7E4EC;min-height:68px}\n.final-alert-chip-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:15px}\n.final-alert-chip{padding:9px 10px;border-radius:12px;border:1px solid rgba(143,208,255,.08);background:#0B141C}\n.final-alert-chip-label{display:block;font:700 7px Cascadia Mono,Consolas,monospace;color:#667F91;letter-spacing:.11em}.final-alert-chip-value{display:block;margin-top:4px;font:700 12px Bahnschrift,Segoe UI,sans-serif;color:#DCE9F0}\n.final-alert-evidence{margin:0;max-height:205px;overflow:auto;white-space:pre-wrap;color:#9CB1BE;font:10px/1.55 Cascadia Mono,Consolas,monospace;background:#060C11;border:1px solid rgba(143,208,255,.07);border-radius:12px;padding:12px}\n.final-alert-verify{position:relative;margin:0 30px 18px;padding:16px 18px;border-radius:17px;background:linear-gradient(145deg,rgba(83,117,139,.11),rgba(5,12,18,.24));border:1px solid rgba(143,208,255,.10)}\n.final-alert-verify-title{font:700 8px Cascadia Mono,Consolas,monospace;letter-spacing:.16em;color:#8FD0FF;margin-bottom:11px}\n.final-alert-steps{display:grid;grid-template-columns:32px 1fr 32px 1fr 32px 1fr;gap:8px;align-items:start}\n.final-alert-step-no{font:800 8px Cascadia Mono,Consolas,monospace;color:#8FD0FF;border:1px solid rgba(143,208,255,.18);border-radius:9px;padding:8px 5px;text-align:center;background:#0B151D}.final-alert-step-text{font:500 10px/1.5 Segoe UI,Arial,sans-serif;color:#99AEBB;padding-top:5px}\n.final-alert-footer{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 30px 16px;border-top:1px solid rgba(143,208,255,.08)}\n.final-alert-source,.final-alert-disclaimer{font:700 7px Cascadia Mono,Consolas,monospace;letter-spacing:.12em;color:#658092}.final-alert-disclaimer{color:#8299A7}\n@media(max-width:900px){.final-alert-metrics{grid-template-columns:repeat(2,1fr)}.final-alert-grid{grid-template-columns:1fr}.final-alert-steps{grid-template-columns:28px 1fr}.final-alert-footer{flex-wrap:wrap}.final-alert-orb{width:106px;height:106px;flex-basis:106px}.final-alert-title{font-size:25px}}\n@media(max-width:600px){.final-alert-top,.final-alert-metrics,.final-alert-grid,.final-alert-verify,.final-alert-footer{padding-left:16px;padding-right:16px}.final-alert-top{align-items:flex-start}.final-alert-work-name{font-size:14px}.final-alert-orb{display:none}.final-alert-metrics{grid-template-columns:1fr 1fr}.final-alert-chip-row{grid-template-columns:1fr}.final-alert-step-text{padding-bottom:8px}}\n</style>\n<style>
 /* FINAL TEAM UI — sharp, stable portrait cards; no distortion */
 .team-members-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px!important;align-items:stretch!important}
 .team-member-card{display:grid!important;grid-template-columns:180px minmax(0,1fr)!important;gap:16px!important;min-height:210px!important;height:auto!important;padding:14px!important;align-items:stretch!important;overflow:hidden!important}
@@ -9642,6 +9661,25 @@ def deep_explorer_view(works: list[dict[str, Any]], analytics: dict[str, Any]) -
                 ],
                 className="deep-insight-grid four",
             ),
+            html.Div(
+                [
+                    html.Div(
+                        [
+                            html.Span("●", className="demo-live-dot"),
+                            html.Span("LIVE DEMO", className="demo-banner-kicker"),
+                            html.Span("One click → real work record → explainable alert card", className="demo-banner-copy"),
+                        ],
+                        className="demo-banner-copy-wrap",
+                    ),
+                    html.Button(
+                        [html.Span("▶", className="btn-icon"), html.Span("OPEN 60s DEMO", className="btn-label")],
+                        id="demo-work-button-main",
+                        className="action-button action-primary demo-main-button",
+                        title="Open the live 60-second work alert demo",
+                    ),
+                ],
+                className="demo-banner",
+            ),
             collapsible_queue_panel(works, table_id="explorer-queue-table", title="Work explorer queue", subtitle="Select a row to inspect · tap to expand", selectable=True),
         ],
         className="deep-view",
@@ -9808,135 +9846,251 @@ def render_view(view, filtered, works_payload, analytics, health):
 # WORK PROFILE LOOKUP
 # ============================================================
 
+# ============================================================
+# LIVE WORK ALERT DEMO / WORK PROFILE
+# ============================================================
+
+def _find_work_in_queue(works_payload: Any, work_uid: str | None) -> dict[str, Any] | None:
+    """Return an exact queue record without calling /works/{work_uid}.
+
+    MPLADS Work IDs can contain literal path separators (e.g. `ws/mp.../2024-2025/...`).
+    FastAPI's `/works/{work_uid}` route therefore cannot safely resolve every real
+    Work ID. The dashboard already has the filtered `/works` records, so using the
+    queue row is the reliable and scope-consistent path for the demo/profile card.
+    """
+    target = str(work_uid or "").strip()
+    if not target:
+        return None
+    target_fold = target.casefold()
+    for record in records(works_payload):
+        candidate = str(record.get("work_uid") or "").strip()
+        if candidate.casefold() == target_fold:
+            return dict(record)
+    return None
+
+
+def _demo_reason(row: dict[str, Any]) -> str:
+    existing = str(row.get("risk_explanation") or "").strip()
+    if existing:
+        return existing
+    primary = str(row.get("primary_risk_reason") or "").strip()
+    if primary:
+        return primary
+
+    signals: list[str] = []
+    util = safe_float(row.get("utilization_pct"), float("nan"))
+    age = safe_float(row.get("days_open_since_sanction"), float("nan"))
+    confidence = safe_float(row.get("confidence_score"), float("nan"))
+    if math.isfinite(util) and util > 100:
+        signals.append(f"Recorded expenditure is {util:.1f}% of sanctioned amount")
+    if math.isfinite(age) and age > 365:
+        signals.append(f"Work has been open for {age:.0f} days since sanction")
+    if bool(row.get("is_duplicate_candidate")):
+        signals.append("Potential duplicate/similarity signal")
+    if bool(row.get("flag_bad_dates")):
+        signals.append("Date-integrity signal")
+    if signals:
+        return " · ".join(signals)
+    if math.isfinite(confidence):
+        return "Composite analytical signal selected for evidence review."
+    return "No single dominant rule was supplied in the queue record; review the score components and source records."
+
+
+def _demo_evidence(row: dict[str, Any]) -> dict[str, Any]:
+    """Build transparent evidence from fields actually present in the queue row."""
+    keys = (
+        "primary_risk_reason",
+        "final_risk_score",
+        "priority_score",
+        "confidence_score",
+        "sanction_amount",
+        "total_expenditure",
+        "utilization_pct",
+        "days_open_since_sanction",
+        "risk_category",
+        "work_status",
+        "financial_year",
+        "state",
+        "ida",
+    )
+    return {key: row.get(key) for key in keys if key in row}
+
+
+def _live_alert_card(row: dict[str, Any], *, source: str = "LIVE QUEUE") -> html.Div:
+    """Premium work-level alert card populated only from real API queue data."""
+    uid = str(row.get("work_uid") or "—")
+    title = str(row.get("work") or row.get("work_description") or "MPLADS work")
+    band = str(row.get("risk_category") or "UNSCORED").upper()
+    score = safe_float(row.get("final_risk_score"), float("nan"))
+    priority = safe_float(row.get("priority_score"), float("nan"))
+    confidence = safe_float(row.get("confidence_score"), float("nan"))
+    util = safe_float(row.get("utilization_pct"), float("nan"))
+    age = safe_float(row.get("days_open_since_sanction"), float("nan"))
+
+    band_class = {
+        "LOW": "low",
+        "MEDIUM": "medium",
+        "HIGH": "high",
+        "CRITICAL": "critical",
+    }.get(band, "neutral")
+
+    context_bits = [
+        str(row.get("work_category") or "Unclassified"),
+        str(row.get("state") or "Unknown state"),
+        str(row.get("ida") or "Unknown district/IDA"),
+    ]
+
+    score_text = f"{score:.1f}" if math.isfinite(score) else "—"
+    priority_text = f"{priority:.1f}" if math.isfinite(priority) else "—"
+    confidence_text = f"{confidence:.1f}" if math.isfinite(confidence) else "—"
+    util_text = f"{util:.1f}%" if math.isfinite(util) else "—"
+    age_text = f"{age:.0f} days" if math.isfinite(age) else "—"
+
+    evidence = _demo_evidence(row)
+
+    return html.Div(
+        [
+            html.Div(
+                [
+                    html.Div(
+                        [
+                            html.Div("LIVE WORK ALERT", className="final-alert-kicker"),
+                            html.Div("Work Intelligence", className="final-alert-title"),
+                            html.Div(title, className="final-alert-work-name"),
+                            html.Div(f"WORK ID · {uid}", className="final-alert-uid"),
+                            html.Div(" · ".join(context_bits), className="final-alert-context"),
+                        ],
+                        className="final-alert-heading",
+                    ),
+                    html.Div(
+                        [
+                            html.Div(score_text, className="final-alert-score"),
+                            html.Div("FINAL RISK", className="final-alert-score-label"),
+                            html.Div(band, className=f"final-alert-band {band_class}"),
+                        ],
+                        className=f"final-alert-orb {band_class}",
+                    ),
+                ],
+                className="final-alert-top",
+            ),
+            html.Div(
+                [
+                    html.Div([html.Div("RECOMMENDED", className="final-alert-metric-label"), html.Div(inr(row.get("recommended_amount")), className="final-alert-metric-value")], className="final-alert-metric"),
+                    html.Div([html.Div("SANCTIONED", className="final-alert-metric-label"), html.Div(inr(row.get("sanction_amount")), className="final-alert-metric-value")], className="final-alert-metric"),
+                    html.Div([html.Div("EXPENDITURE", className="final-alert-metric-label"), html.Div(inr(row.get("total_expenditure")), className="final-alert-metric-value")], className="final-alert-metric"),
+                    html.Div([html.Div("UTILISATION", className="final-alert-metric-label"), html.Div(util_text, className="final-alert-metric-value")], className="final-alert-metric"),
+                ],
+                className="final-alert-metrics",
+            ),
+            html.Div(
+                [
+                    html.Div(
+                        [
+                            html.Div("WHY THIS WORK IS IN VIEW", className="final-alert-section-label"),
+                            html.Div(_demo_reason(row), className="final-alert-explanation"),
+                            html.Div(
+                                [
+                                    html.Div([html.Span("PRIORITY", className="final-alert-chip-label"), html.Span(priority_text, className="final-alert-chip-value")], className="final-alert-chip"),
+                                    html.Div([html.Span("CONFIDENCE", className="final-alert-chip-label"), html.Span(confidence_text, className="final-alert-chip-value")], className="final-alert-chip"),
+                                    html.Div([html.Span("OPEN AGE", className="final-alert-chip-label"), html.Span(age_text, className="final-alert-chip-value")], className="final-alert-chip"),
+                                ],
+                                className="final-alert-chip-row",
+                            ),
+                        ],
+                        className="final-alert-panel",
+                    ),
+                    html.Div(
+                        [
+                            html.Div("EVIDENCE SNAPSHOT", className="final-alert-section-label"),
+                            html.Pre(json.dumps(evidence, indent=2, ensure_ascii=False, default=str), className="final-alert-evidence"),
+                        ],
+                        className="final-alert-panel",
+                    ),
+                ],
+                className="final-alert-grid",
+            ),
+            html.Div(
+                [
+                    html.Div("HUMAN VERIFICATION", className="final-alert-verify-title"),
+                    html.Div(
+                        [
+                            html.Div("01", className="final-alert-step-no"), html.Div("Check sanction, status and transaction dates against source records.", className="final-alert-step-text"),
+                            html.Div("02", className="final-alert-step-no"), html.Div("Review supporting documents and legitimate operational explanations.", className="final-alert-step-text"),
+                            html.Div("03", className="final-alert-step-no"), html.Div("Record the review outcome; the analytical signal is not an adjudication.", className="final-alert-step-text"),
+                        ],
+                        className="final-alert-steps",
+                    ),
+                ],
+                className="final-alert-verify",
+            ),
+            html.Div(
+                [
+                    html.Span(source, className="final-alert-source"),
+                    html.Span("SIGNAL ≠ PROOF", className="final-alert-disclaimer"),
+                    html.Span("AI SUPPORTS REVIEW · AUTHORITY DECIDES", className="final-alert-disclaimer"),
+                ],
+                className="final-alert-footer",
+            ),
+        ],
+        id="live-work-alert-card",
+        className="final-alert-card",
+    )
+
+
 @app.callback(
     Output("selected-work-detail", "children"),
     Input("work-lookup-button", "n_clicks"),
     Input("demo-work-button", "n_clicks"),
+    Input("demo-work-button-main", "n_clicks"),
     State("work-id-input", "value"),
     State("works-store", "data"),
     prevent_initial_call=True,
 )
-def lookup_work(_clicks, _demo_clicks, work_uid, works_payload):
-    # DEMO: prefer the already-loaded filtered queue. If the store has not
-    # arrived yet (possible during the first page load), fall back to a direct
-    # API request so the button still works reliably on Render.
-    if ctx.triggered_id == "demo-work-button":
-        demo_works = records(works_payload)
-        if demo_works:
-            work_uid = demo_works[0].get("work_uid")
-        else:
-            try:
-                demo_payload = api_get(
-                    "/api/v1/works",
-                    {"page": 1, "page_size": 1, "sort_by": "priority_score", "sort_order": "desc"},
-                )
-                demo_works = records(demo_payload)
-                work_uid = demo_works[0].get("work_uid") if demo_works else None
-            except requests.RequestException as exc:
-                return empty_panel(f"Live demo could not load a work profile: {exc}")
+def lookup_work(_clicks, _demo_clicks, _demo_main_clicks, work_uid, works_payload):
+    """Open a real work card without relying on a path-fragile Work-ID route."""
+    triggered = ctx.triggered_id
+
+    if triggered in {"demo-work-button", "demo-work-button-main"}:
+        queue = records(works_payload)
+        if queue:
+            return _live_alert_card(queue[0], source="LIVE 60s DEMO · FILTERED QUEUE")
+        try:
+            payload = api_get(
+                "/api/v1/works",
+                {"page": 1, "page_size": 1, "sort_by": "priority_score", "sort_order": "desc"},
+            )
+            queue = records(payload)
+            if queue:
+                return _live_alert_card(queue[0], source="LIVE 60s DEMO · API QUEUE")
+            return empty_panel("The live API returned no review candidates.")
+        except requests.RequestException as exc:
+            return empty_panel(f"Live demo could not load the work queue: {exc}")
 
     uid = str(work_uid or "").strip()
-
     if not uid:
         return empty_panel("Enter a Work ID to open its evidence profile.")
 
-    try:
-        detail = api_get(f"/api/v1/works/{uid}")
-    except requests.HTTPError as exc:
-        status = exc.response.status_code if exc.response is not None else None
-        if status == 404:
-            return empty_panel(f"No work was found for Work ID: {uid}")
-        return empty_panel(f"Work profile request failed: HTTP {status or 'error'}")
-    except requests.RequestException as exc:
-        return empty_panel(f"FastAPI request failed: {exc}")
-
-    row = detail.get("work", {}) if isinstance(detail, dict) else {}
-    components = detail.get("risk_components", {}) if isinstance(detail, dict) else {}
-    evidence = detail.get("evidence", {}) if isinstance(detail, dict) else {}
-
-    if isinstance(evidence, str):
+    row = _find_work_in_queue(works_payload, uid)
+    if row is None:
         try:
-            evidence = json.loads(evidence)
-        except json.JSONDecodeError:
-            evidence = {}
+            search_payload = api_get(
+                "/api/v1/works",
+                {
+                    "search": uid,
+                    "page": 1,
+                    "page_size": 100,
+                    "sort_by": "priority_score",
+                    "sort_order": "desc",
+                },
+            )
+            row = _find_work_in_queue(search_payload, uid)
+        except requests.RequestException as exc:
+            return empty_panel(f"FastAPI request failed while finding Work ID: {exc}")
 
-    return html.Div(
-        [
-            html.Div("WORK INTELLIGENCE", className="section-kicker"),
-            html.Div(
-                [
-                    html.Div(
-                        [
-                            html.Div(str(row.get("work", uid)), className="detail-title"),
-                            html.Div(f"Work ID · {uid}", className="mono"),
-                            html.Div(
-                                f"{row.get('work_category', 'Unclassified')} · "
-                                f"{row.get('state', 'Unknown')} · "
-                                f"{row.get('ida', 'Unknown')}",
-                                className="detail-meta",
-                            ),
-                        ]
-                    ),
-                    html.Div(
-                        [
-                            html.Div(
-                                f"{safe_float(components.get('final_risk_score')):.1f}",
-                                className="score-number",
-                            ),
-                            html.Div(
-                                str(row.get("risk_category", "UNSCORED")),
-                                className="score-band",
-                            ),
-                        ],
-                        className="score-orb",
-                    ),
-                ],
-                className="detail-head",
-            ),
-            html.Div(
-                [
-                    kpi_card("RECOMMENDED", inr(row.get("recommended_amount"))),
-                    kpi_card("SANCTIONED", inr(row.get("sanction_amount"))),
-                    kpi_card("EXPENDITURE", inr(row.get("total_expenditure"))),
-                    kpi_card("UTILISATION", pct(row.get("utilization_pct"))),
-                ],
-                className="detail-kpis",
-            ),
-            html.Div(
-                [
-                    html.Div(
-                        dcc.Graph(
-                            figure=component_figure(components),
-                            config={"displaylogo": False},
-                        ),
-                        className="panel",
-                    ),
-                    html.Div(
-                        [
-                            html.Div("WHY FLAGGED?", className="section-kicker"),
-                            html.Div(
-                                str(row.get("risk_explanation") or "No strong rule-based signal."),
-                                className="explanation",
-                            ),
-                            html.Div("EVIDENCE", className="section-kicker"),
-                            html.Pre(
-                                json.dumps(
-                                    evidence,
-                                    indent=2,
-                                    ensure_ascii=False,
-                                    default=str,
-                                )[:6000],
-                                className="evidence",
-                            ),
-                        ],
-                        className="panel",
-                    ),
-                ],
-                className="chart-grid",
-            ),
-        ],
-        className="detail-card",
-    )
+    if row is None:
+        return empty_panel(f"No work was found for Work ID: {uid}")
+
+    return _live_alert_card(row, source="LIVE WORK LOOKUP")
 
 
 # ============================================================
