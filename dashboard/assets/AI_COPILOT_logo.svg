@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="240" viewBox="0 0 960 240" role="img" aria-labelledby="title desc">
+  <title id="title">AI COPILOT</title>
+  <desc id="desc">Minimalist glass AI Copilot logo for MPLADS AI Monitor</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#173E55"/>
+      <stop offset="1" stop-color="#0A1A27"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#AEE6FF"/>
+      <stop offset="1" stop-color="#67B9DE"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="16" stdDeviation="14" flood-color="#000000" flood-opacity=".30"/>
+    </filter>
+  </defs>
+  <rect width="960" height="240" rx="34" fill="#071019"/>
+  <g transform="translate(38 28)" filter="url(#shadow)">
+    <rect x="0" y="0" width="184" height="184" rx="42" fill="url(#bg)" stroke="url(#edge)" stroke-width="2"/>
+    <path d="M92 28L156 92L92 156L28 92Z" fill="none" stroke="#8FD0FF" stroke-opacity=".24" stroke-width="3"/>
+    <path d="M57 111C68 70 116 54 137 84" fill="none" stroke="#8FD0FF" stroke-width="8" stroke-linecap="round"/>
+    <path d="M52 128C76 151 118 145 138 119" fill="none" stroke="#62D39B" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="92" cy="92" r="42" fill="#0B2535" stroke="#EAF8FF" stroke-opacity=".24" stroke-width="2"/>
+    <text x="92" y="101" text-anchor="middle" fill="#F6FCFE" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" letter-spacing="2">AI</text>
+    <circle cx="151" cy="63" r="6" fill="#F0C675"/>
+    <circle cx="46" cy="72" r="5" fill="#62D39B"/>
+    <circle cx="143" cy="142" r="5" fill="#8FD0FF"/>
+  </g>
+  <g transform="translate(266 70)">
+    <text x="0" y="56" fill="#F4FAFD" font-family="Segoe UI, Arial, sans-serif" font-size="54" font-weight="800" letter-spacing="3">AI COPILOT</text>
+    <text x="2" y="95" fill="#86A7B8" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="500" letter-spacing="1">MPLADS AI MONITOR · BACKEND GROUNDED</text>
+  </g>
+</svg>
