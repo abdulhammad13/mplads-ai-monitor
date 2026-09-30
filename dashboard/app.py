@@ -2303,6 +2303,22 @@ app.index_string = r"""
 })();
 </script>
 
+<script>
+(function(){
+  var observer = new MutationObserver(function(){
+    var detail = document.getElementById("selected-work-detail");
+    if(!detail) return;
+    var card = detail.querySelector(".detail-card");
+    if(card){ setTimeout(function(){ card.scrollIntoView({behavior:"smooth", block:"start"}); }, 180); }
+  });
+  function start(){
+    var detail = document.getElementById("selected-work-detail");
+    if(detail) observer.observe(detail, {childList:true, subtree:true});
+  }
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
+})();
+</script>
+
 </head>
 <body>
     {%app_entry%}
@@ -9801,14 +9817,23 @@ def render_view(view, filtered, works_payload, analytics, health):
     prevent_initial_call=True,
 )
 def lookup_work(_clicks, _demo_clicks, work_uid, works_payload):
-    # Demo mode intentionally reuses the live filtered queue; no hard-coded
-    # Work ID is introduced, so the demo stays valid as the dataset changes.
+    # DEMO: prefer the already-loaded filtered queue. If the store has not
+    # arrived yet (possible during the first page load), fall back to a direct
+    # API request so the button still works reliably on Render.
     if ctx.triggered_id == "demo-work-button":
         demo_works = records(works_payload)
-        if not demo_works:
-            return empty_panel("No work is available in the current scope for the live demo.")
-        # /api/v1/works is already requested in priority_score DESC order.
-        work_uid = demo_works[0].get("work_uid")
+        if demo_works:
+            work_uid = demo_works[0].get("work_uid")
+        else:
+            try:
+                demo_payload = api_get(
+                    "/api/v1/works",
+                    {"page": 1, "page_size": 1, "sort_by": "priority_score", "sort_order": "desc"},
+                )
+                demo_works = records(demo_payload)
+                work_uid = demo_works[0].get("work_uid") if demo_works else None
+            except requests.RequestException as exc:
+                return empty_panel(f"Live demo could not load a work profile: {exc}")
 
     uid = str(work_uid or "").strip()
 
