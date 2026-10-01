@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import json
 import math
@@ -10398,24 +10398,6 @@ html, body, #react-entry-point, .app-root, ._dash-loading { -webkit-font-smoothi
 </script>
 """)
 
-if __name__ == "__main__":
-    print("=" * 72)
-    print("MPLADS AI MONITOR — DASH")
-    print(f"Dashboard : http://{DASH_HOST}:{DASH_PORT}")
-    print(f"FastAPI   : {API_BASE}")
-    print(f"Version   : {APP_VERSION}")
-    print("AI COPILOT: backend-grounded · current-context synchronised")
-    print("Team photos: first_lastname.PNG / JPG / JPEG / WEBP")
-    print("=" * 72)
-
-    app.run(
-        host=DASH_HOST,
-        port=DASH_PORT,
-        debug=False,
-        dev_tools_hot_reload=False,
-    )
-
-
 # ============================================================
 # FINAL TEAM INFO UX — RESPONSIVE, SHARP, NON-DISTORTING
 # ============================================================
@@ -11336,3 +11318,637 @@ app.index_string = app.index_string.replace("</head>", r"""<style>
 
 </style>""" + "</head>")
 
+# ============================================================
+# FINAL PORTRAIT INTERACTION — WHATSAPP-DP STYLE / ZERO BLUR
+# ============================================================
+# This layer is intentionally placed BEFORE app.run() so direct
+# execution of app.py actually applies every final UI override.
+# It does not change analytics, API contracts, filters, or data.
+# ============================================================
+
+app.index_string = app.index_string.replace("</head>", r"""
+<style>
+/* ============================================================
+   TEAM PORTRAITS — SHARP, STABLE, CLICKABLE, NEVER BLURRED
+   ============================================================ */
+
+/* The picture itself is a passive image surface. Clicking it is
+   handled by the lightweight lightbox below, just like a profile
+   photo preview rather than a hover zoom effect. */
+.team-member-photo,
+.team-member-photo-frame img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:cover!important;
+  object-position:50% 24%!important;
+  filter:none!important;
+  -webkit-filter:none!important;
+  transform:none!important;
+  -webkit-transform:none!important;
+  transition:none!important;
+  -webkit-transition:none!important;
+  animation:none!important;
+  -webkit-animation:none!important;
+  will-change:auto!important;
+  backface-visibility:visible!important;
+  -webkit-backface-visibility:visible!important;
+  image-rendering:auto!important;
+  pointer-events:none!important;
+  user-select:none!important;
+  -webkit-user-select:none!important;
+  -webkit-user-drag:none!important;
+}
+
+/* Absolutely no hover/active/focus scaling of the photo itself. */
+.team-member-card:hover .team-member-photo,
+.team-member-card:active .team-member-photo,
+.team-member-card:focus .team-member-photo,
+.team-member-card:focus-within .team-member-photo{
+  transform:none!important;
+  -webkit-transform:none!important;
+  filter:none!important;
+  -webkit-filter:none!important;
+  transition:none!important;
+}
+
+/* Keep the frame crisp too. No GPU transform and no local backdrop blur. */
+.team-member-photo-frame,
+.team-member-avatar,
+.team-member-avatar-photo{
+  transform:none!important;
+  -webkit-transform:none!important;
+  filter:none!important;
+  -webkit-filter:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  will-change:auto!important;
+}
+
+/* The old identity pill used to blur its own backing glass. Remove that
+   effect because it sits on top of the portrait. */
+.team-member-photo-corner{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  filter:none!important;
+}
+
+/* Make the photo feel clickable without modifying its pixels. */
+.team-member-photo-frame{
+  cursor:zoom-in!important;
+}
+.team-member-photo-frame:hover{
+  border-color:rgba(143,208,255,.36)!important;
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.30),
+    0 0 0 4px rgba(143,208,255,.035)!important;
+}
+
+/* ============================================================
+   FULL-SCREEN PORTRAIT PREVIEW — WHATSAPP-DP STYLE
+   ============================================================ */
+.team-photo-lightbox{
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483000!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:28px!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  transition:opacity .18s ease,visibility .18s ease!important;
+}
+
+.team-photo-lightbox.is-open{
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+
+.team-photo-lightbox-backdrop{
+  position:absolute!important;
+  inset:0!important;
+  background:
+    radial-gradient(circle at 50% 38%,rgba(105,194,244,.09),transparent 30%),
+    rgba(2,7,12,.86)!important;
+  backdrop-filter:blur(7px) saturate(108%)!important;
+  -webkit-backdrop-filter:blur(7px) saturate(108%)!important;
+}
+
+.team-photo-lightbox-panel{
+  position:relative!important;
+  z-index:2!important;
+  width:min(760px,92vw)!important;
+  height:min(820px,90vh)!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:14px!important;
+  padding:24px!important;
+  border-radius:28px!important;
+  border:1px solid rgba(157,216,245,.20)!important;
+  background:
+    radial-gradient(circle at 20% 0%,rgba(122,207,255,.07),transparent 32%),
+    linear-gradient(145deg,rgba(15,26,37,.92),rgba(7,13,20,.96))!important;
+  box-shadow:
+    0 38px 110px rgba(0,0,0,.62),
+    0 0 0 1px rgba(255,255,255,.025) inset!important;
+}
+
+.team-photo-lightbox-image{
+  display:block!important;
+  width:auto!important;
+  height:auto!important;
+  max-width:min(720px,84vw)!important;
+  max-height:74vh!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  border-radius:24px!important;
+  filter:none!important;
+  -webkit-filter:none!important;
+  transform:none!important;
+  -webkit-transform:none!important;
+  animation:none!important;
+  transition:none!important;
+  image-rendering:auto!important;
+  backface-visibility:visible!important;
+  -webkit-backface-visibility:visible!important;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.45),
+    0 0 0 1px rgba(255,255,255,.08)!important;
+}
+
+.team-photo-lightbox-name{
+  color:#EEF7FB!important;
+  font:800 14px/1.2 "Segoe UI",Arial,sans-serif!important;
+  letter-spacing:-.01em!important;
+  text-align:center!important;
+}
+
+.team-photo-lightbox-close{
+  position:absolute!important;
+  top:14px!important;
+  right:14px!important;
+  width:42px!important;
+  height:42px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:14px!important;
+  border:1px solid rgba(157,216,245,.16)!important;
+  background:rgba(9,19,28,.86)!important;
+  color:#C1D2DC!important;
+  cursor:pointer!important;
+  font:400 25px/1 "Segoe UI",Arial,sans-serif!important;
+  transition:all .16s ease!important;
+}
+.team-photo-lightbox-close:hover{
+  color:#FFFFFF!important;
+  border-color:rgba(157,216,245,.40)!important;
+  background:rgba(20,39,53,.94)!important;
+  transform:translateY(-1px)!important;
+}
+
+.team-photo-lightbox-hint{
+  color:#718795!important;
+  font:700 7px/1.2 "Cascadia Mono",Consolas,monospace!important;
+  letter-spacing:.12em!important;
+  text-transform:uppercase!important;
+  text-align:center!important;
+}
+
+@media(max-width:700px){
+  .team-photo-lightbox{
+    padding:14px!important;
+  }
+  .team-photo-lightbox-panel{
+    width:96vw!important;
+    height:min(760px,92vh)!important;
+    padding:16px!important;
+    border-radius:22px!important;
+  }
+  .team-photo-lightbox-image{
+    max-width:88vw!important;
+    max-height:76vh!important;
+    border-radius:20px!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .team-photo-lightbox,
+  .team-photo-lightbox-close{
+    transition:none!important;
+  }
+}
+</style>
+
+<script>
+(function(){
+  "use strict";
+
+  var LIGHTBOX_ID = "team-photo-lightbox";
+
+  function getLightbox(){
+    return document.getElementById(LIGHTBOX_ID);
+  }
+
+  function closePhotoPreview(){
+    var box = getLightbox();
+    if(!box) return;
+    box.classList.remove("is-open");
+    document.documentElement.classList.remove("team-photo-preview-open");
+    window.setTimeout(function(){
+      if(box.parentNode) box.parentNode.removeChild(box);
+    }, 190);
+  }
+
+  function openPhotoPreview(img){
+    if(!img) return;
+
+    var existing = getLightbox();
+    if(existing) existing.remove();
+
+    var src = img.currentSrc || img.src || "";
+    if(!src) return;
+
+    var alt = img.alt || "Team member portrait";
+    var panel = document.createElement("div");
+    panel.id = LIGHTBOX_ID;
+    panel.className = "team-photo-lightbox";
+
+    var backdrop = document.createElement("div");
+    backdrop.className = "team-photo-lightbox-backdrop";
+    backdrop.setAttribute("aria-hidden","true");
+
+    var card = document.createElement("div");
+    card.className = "team-photo-lightbox-panel";
+    card.setAttribute("role","dialog");
+    card.setAttribute("aria-modal","true");
+    card.setAttribute("aria-label", alt);
+
+    var close = document.createElement("button");
+    close.type = "button";
+    close.className = "team-photo-lightbox-close";
+    close.textContent = "×";
+    close.setAttribute("aria-label","Close portrait preview");
+    close.title = "Close";
+
+    var image = document.createElement("img");
+    image.className = "team-photo-lightbox-image";
+    image.src = src;
+    image.alt = alt;
+    image.draggable = false;
+
+    var name = document.createElement("div");
+    name.className = "team-photo-lightbox-name";
+    name.textContent = alt.replace(/\s+portrait$/i,"");
+
+    var hint = document.createElement("div");
+    hint.className = "team-photo-lightbox-hint";
+    hint.textContent = "Click outside or press ESC to close";
+
+    close.addEventListener("click", function(event){
+      event.preventDefault();
+      event.stopPropagation();
+      closePhotoPreview();
+    });
+
+    backdrop.addEventListener("click", function(){
+      closePhotoPreview();
+    });
+
+    card.addEventListener("click", function(event){
+      event.stopPropagation();
+    });
+
+    card.appendChild(close);
+    card.appendChild(image);
+    card.appendChild(name);
+    card.appendChild(hint);
+    panel.appendChild(backdrop);
+    panel.appendChild(card);
+    document.body.appendChild(panel);
+
+    document.documentElement.classList.add("team-photo-preview-open");
+
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        panel.classList.add("is-open");
+      });
+    });
+
+    close.focus({preventScroll:true});
+  }
+
+  document.addEventListener("click", function(event){
+    var img = event.target && event.target.closest
+      ? event.target.closest("img.team-member-photo")
+      : null;
+
+    if(!img) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    openPhotoPreview(img);
+  }, true);
+
+  document.addEventListener("keydown", function(event){
+    var box = getLightbox();
+    if(!box || !box.classList.contains("is-open")) return;
+
+    var key = (event.key || "").toLowerCase();
+
+    if(key === "escape"){
+      event.preventDefault();
+      closePhotoPreview();
+    }
+  });
+
+})();
+</script>
+""" + "</head>")
+
+# ============================================================
+# FINAL TEAM PORTRAIT UX PATCH — ZERO-BLUR INTERACTION
+# ============================================================
+# Design rule:
+#   Hover/cursor interaction MUST affect only the portrait FRAME.
+#   The actual portrait bitmap never scales, transforms, filters,
+#   or enters a GPU-composited transition state.
+#
+# Result:
+#   • Cursor over a portrait -> crisp image + subtle frame glow.
+#   • Click portrait -> existing WhatsApp-style full preview.
+#   • No image blur, no zoom-resampling, no transform interpolation.
+#   • No feature removal; this is a visual interaction-only patch.
+# ============================================================
+
+app.index_string = app.index_string.replace("</head>", r"""
+<style>
+
+/* ------------------------------------------------------------
+   1. HARD SHARPNESS CONTRACT
+   ------------------------------------------------------------ */
+
+.team-member-photo,
+.team-member-photo:hover,
+.team-member-photo:focus,
+.team-member-photo:active,
+.team-member-photo-frame img,
+.team-member-photo-frame img:hover,
+.team-member-avatar-photo img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:cover!important;
+  object-position:50% 25%!important;
+
+  /* Never resize the bitmap through CSS transforms. */
+  transform:none!important;
+  -webkit-transform:none!important;
+  scale:none!important;
+  rotate:none!important;
+  translate:none!important;
+
+  /* Never apply visual filters to the portrait. */
+  filter:none!important;
+  -webkit-filter:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+
+  /* Avoid browser animation/compositing blur. */
+  animation:none!important;
+  transition:none!important;
+  will-change:auto!important;
+  backface-visibility:visible!important;
+  -webkit-backface-visibility:visible!important;
+  perspective:none!important;
+  image-rendering:auto!important;
+
+  user-select:none!important;
+  -webkit-user-select:none!important;
+  -webkit-user-drag:none!important;
+
+  cursor:zoom-in!important;
+}
+
+/* The frame itself also stays on the normal paint path. */
+.team-member-photo-frame,
+.team-member-photo-frame:hover,
+.team-member-photo-frame:focus,
+.team-member-photo-frame:active,
+.team-member-avatar,
+.team-member-avatar-photo{
+  transform:none!important;
+  -webkit-transform:none!important;
+  filter:none!important;
+  -webkit-filter:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  will-change:auto!important;
+  perspective:none!important;
+}
+
+/* ------------------------------------------------------------
+   2. REMOVE THE SOURCE OF THE BLUR
+   ------------------------------------------------------------ */
+
+/*
+   Earlier visual layers used:
+     .team-member-card:hover .team-member-photo {
+         transform: scale(...)
+     }
+   and:
+     .team-member-photo { transform: translateZ(0) ... }
+
+   Both are intentionally neutralised here.
+*/
+.team-member-card,
+.team-member-card:hover,
+.team-member-card:focus-within,
+.team-member-card:active{
+  transform:none!important;
+  -webkit-transform:none!important;
+  filter:none!important;
+  -webkit-filter:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  will-change:auto!important;
+}
+
+/* ------------------------------------------------------------
+   3. INTERACTIVE FEEL — FRAME ONLY, NEVER THE PHOTO
+   ------------------------------------------------------------ */
+
+.team-member-card{
+  position:relative!important;
+  transition:
+    border-color .20s ease,
+    box-shadow .20s ease,
+    background-color .20s ease!important;
+}
+
+.team-member-card:hover{
+  border-color:rgba(143,208,255,.42)!important;
+  box-shadow:
+    0 18px 40px rgba(0,0,0,.30),
+    0 0 0 1px rgba(143,208,255,.05) inset,
+    0 0 28px rgba(126,200,255,.075)!important;
+}
+
+.team-member-photo-frame{
+  position:relative!important;
+  isolation:isolate!important;
+  overflow:hidden!important;
+  transition:
+    border-color .20s ease,
+    box-shadow .20s ease,
+    background-color .20s ease!important;
+}
+
+.team-member-photo-frame:hover{
+  border-color:rgba(143,208,255,.46)!important;
+  box-shadow:
+    0 0 0 4px rgba(143,208,255,.035),
+    0 14px 30px rgba(0,0,0,.30),
+    0 0 26px rgba(105,194,244,.08)!important;
+}
+
+/* Elegant light sweep without touching/filtering the photo pixels. */
+.team-member-photo-frame:after{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:2!important;
+  pointer-events:none!important;
+  border-radius:inherit!important;
+  background:
+    linear-gradient(
+      135deg,
+      transparent 0%,
+      transparent 42%,
+      rgba(255,255,255,.075) 50%,
+      transparent 58%,
+      transparent 100%
+    )!important;
+  opacity:0!important;
+  transform:none!important;
+  filter:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  transition:opacity .20s ease!important;
+}
+
+.team-member-photo-frame:hover:after{
+  opacity:1!important;
+}
+
+/* Inner frame line gives interaction feedback instead of zooming. */
+.team-member-photo-frame:before{
+  content:""!important;
+  position:absolute!important;
+  inset:7px!important;
+  z-index:3!important;
+  pointer-events:none!important;
+  border-radius:inherit!important;
+  border:1px solid rgba(255,255,255,.075)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(143,208,255,.015),
+    inset 0 0 34px rgba(143,208,255,.025)!important;
+}
+
+/* ------------------------------------------------------------
+   4. WHATSAPP-DP STYLE CLICK AFFORDANCE
+   ------------------------------------------------------------ */
+
+.team-member-photo-frame{
+  cursor:zoom-in!important;
+}
+
+.team-member-photo-frame:active{
+  border-color:rgba(143,208,255,.62)!important;
+  box-shadow:
+    0 0 0 5px rgba(143,208,255,.055),
+    0 12px 26px rgba(0,0,0,.28),
+    0 0 30px rgba(105,194,244,.10)!important;
+}
+
+.team-member-photo-frame:active .team-member-photo{
+  transform:none!important;
+  filter:none!important;
+  transition:none!important;
+}
+
+/* The little initials badge stays crisp and does NOT blur its background. */
+.team-member-photo-corner{
+  z-index:5!important;
+  pointer-events:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  filter:none!important;
+  -webkit-filter:none!important;
+  background:rgba(5,12,18,.90)!important;
+  box-shadow:
+    0 8px 18px rgba(0,0,0,.22),
+    inset 0 1px 0 rgba(255,255,255,.04)!important;
+}
+
+/* ------------------------------------------------------------
+   5. PRESERVE RESPONSIVENESS / ACCESSIBILITY
+   ------------------------------------------------------------ */
+
+.team-member-photo:focus-visible,
+.team-member-photo-frame:focus-visible{
+  outline:2px solid rgba(143,208,255,.65)!important;
+  outline-offset:3px!important;
+}
+
+@media (hover:none){
+  .team-member-card:hover{
+    border-color:rgba(143,208,255,.14)!important;
+    box-shadow:0 16px 38px rgba(0,0,0,.22)!important;
+  }
+  .team-member-photo-frame:hover{
+    border-color:rgba(143,208,255,.22)!important;
+    box-shadow:0 10px 26px rgba(0,0,0,.26)!important;
+  }
+  .team-member-photo-frame:hover:after{
+    opacity:0!important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .team-member-card,
+  .team-member-photo-frame,
+  .team-member-photo-frame:after{
+    transition:none!important;
+    animation:none!important;
+  }
+}
+
+</style>
+""" + "</head>")
+
+if __name__ == "__main__":
+    print("=" * 72)
+    print("MPLADS AI MONITOR - DASH")
+    print(f"Dashboard : http://{DASH_HOST}:{DASH_PORT}")
+    print(f"FastAPI   : {API_BASE}")
+    print(f"Version   : {APP_VERSION}")
+    print("AI COPILOT: backend-grounded - current-context synchronised")
+    print("Team photos: first_lastname.PNG / JPG / JPEG / WEBP")
+    print("=" * 72)
+
+    app.run(
+        host=DASH_HOST,
+        port=DASH_PORT,
+        debug=False,
+        dev_tools_hot_reload=False,
+    )
